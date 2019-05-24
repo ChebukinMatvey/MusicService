@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, insert
 from pprint import pprint
 from sqlalchemy.orm import Session
 import pandas as pd
-from domain.scheme import Tag,Feature, Artist,Song,Album,artists_songs as artists_songs_table
+from database.scheme import Tag,Feature, Artist,Song,Album,artists_songs as artists_songs_table
 
 
 def fill_table_wrapper(df,foo):

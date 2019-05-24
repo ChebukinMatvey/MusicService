@@ -1,4 +1,4 @@
-from domain.scheme import *
+from database.scheme import *
 from database.database import get_session
 from Levenshtein import jaro
 import json
@@ -6,24 +6,25 @@ import urllib3
 
 session = get_session()
 
-def get_song(name):
-    songs = session.query(Song).all()
+def get_songs(name):
+    songs = session.query(Song).filter(Song.stream!=None).all()
     res = []
     for song in songs:
         cof =jaro(song.name,name)
-        if cof > 0.85:
+        if cof > 0.7:
             res.append(
                 {
                     "id":song.id,
                     "name":song.name,
                     "duration": song.feature.duration,
-                    "artists": [ { "name":artist.name } for artist in song.artist],
-                    "img":song.albums.img,
+                    "stream":song.stream,
+                    "artists": [ artist.name for artist in song.artist],
+                    "img":song.album.img,
                     "jaro":cof
-                 }
+                }
             )
     res = sorted(res,key=(lambda x:x['jaro']),reverse=True)
-    return res[:25]
+    return res
 
 
 def get_artist(name):
@@ -39,8 +40,8 @@ def get_artist(name):
                      "id":song.id,
                      "name":song.name,
                      "duration":song.feature.duration,
-                     "album":song.albums.name,
-                     "img":song.albums.img
+                     "album":song.album.name,
+                     "img":song.album.img
                  }
              )
             result.append({
@@ -54,17 +55,8 @@ def get_artist(name):
 
 
 def get_stream(id):
-    http = urllib3.PoolManager()
     song = session.query(Song).get(id)
-    resp = json.loads(
-        http.request(
-            "GET",f"https://zvuk.com/sapi/search?query={ song.artist[0].name + ' ' + song.name }&include=track").data.decode('utf-8')
-            )
-    id = list(resp["result"]["tracks"].keys())[0]
-    resp = json.loads(
-        http.request("GET",f"https://zvuk.com/api/tiny/track/stream?id={id}&quality=high").data.decode("utf-8")
-        )
-    return resp["result"]["stream"]
+    return song.stream 
 
 
 

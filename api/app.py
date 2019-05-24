@@ -13,9 +13,9 @@ def process_data(data):
     return resp
 
 
-@app.route('/track', methods=['GET'])  ## Get songs
+@app.route('/track', methods=['POST'])  ## Get songs
 def song():
-    return process_data(get_song(request.get_json()['name']))
+    return process_data(get_songs(request.get_json(force=True)['name']))
 
 
 @app.route('/artist', methods=['GET'])  ## Get artist
@@ -23,7 +23,7 @@ def artist():
     return process_data(get_artist(request.get_json()['name']))
 
 
-@app.route('/stream', methods=['GET'])  ## Get song stream
+@app.route('/stream', methods=['POST'])  ## Get song stream
 def stream():
     return process_data(get_stream(request.get_json()['id']))
 

@@ -62,7 +62,8 @@ class Song(Base):
     popularity = Column(SmallInteger)
     track_number = Column(SmallInteger)
     genere = Column(String(30))
-    
+    stream = Column(String(150))
+
     tags = relationship('Tag',secondary=songs_tags)
     artist = relationship('Artist',secondary=artists_songs)
     album_id = Column(String(23),ForeignKey('albums.id'))

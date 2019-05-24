@@ -1,0 +1,29 @@
+body{
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+}
+
+body >div.container{
+    margin-top: 50px;
+    margin-bottom: 100px;
+}
+
+.search-button{
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+}
+
+#list{
+    margin-bottom: 100px;
+}
+
+#list{
+    overflow-y: scroll;
+    overflow: hidden;
+    height: 100%;
+}
+
+.player{
+    position: fixed;
+    bottom: 0%;
+    width: 100%;
+}

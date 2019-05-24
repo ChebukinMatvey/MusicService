@@ -4,11 +4,16 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
-    "form-data": "^2.3.3"
+    "electron": "^5.0.1",
+    "electron-reload": "^1.4.0",
+    "form-data": "^2.3.3",
+    "howler": "^2.1.2",
+    "jquery": "^3.4.1",
+    "jquery-ui": "^1.12.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron ."
   },
   "author": "",
   "license": "ISC"

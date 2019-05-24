@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/track-presentation.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/player.css">
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <script>jui = require('jquery-ui');</script>
+  <script src="../js/player.js"></script>
+  <script src="../js/howler.core.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <title>The app</title>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="input-group mb-3">
+      <input type="text" id="search-input" class="form-control">
+      <button class="btn btn-default search-button" onclick="search_click()">Пошук</button>
+    </div>
+    <div class="search-result">
+      <ul id="list">
+        <!-- Item  -->
+      </ul>
+    </div>
+  </div>
+
+  <div class="player">
+    <input type="range" id="audio-state" oninput="seekAudio(this.value)">
+    <div>
+      <div class="player-track-preview">
+        <img id="player-image" src="https://i.scdn.co/image/41ee9f770ffc9c4df6b60fb079613d16417e918c" alt="">
+        <div class="player-name-and-artist">
+          <p class="track-artists">Name</p>
+          <p class="track-name col-5">artist</p>
+        </div>
+      </div>
+      <div class="player-buttons">
+        <i class="icon material-icons prev" onclick="previous()">skip_previous</i>
+        <i class="icon material-icons play" onclick="play()">play_arrow</i>
+        <i class="icon material-icons pause" onclick="pause()">pause</i>
+        <i class="icon material-icons next" onclick="next()">skip_next</i>
+      </div>
+
+      <div id="volume-block">
+        <i class="material-icons">volume_up</i>
+        <input id="volume" type="range" min="0" max="100" step="1" oninput="setVolume(this.value)"
+          onchange="setVolume(this.value)"></input>
+      </div>
+
+      <div class="player-time">
+
+      </div>
+
+    </div>
+  </div>
+</body>
+<script>
+  var track_list
+  var current_track_index
+  var is_ready_to_play
+  var player
+  var track_duration
+
+  async function show_tracks(tracks) {
+    if (tracks.length < 1) {
+      alert("Немає треків")
+      return
+    }
+    track_list = tracks
+
+    $("#list div").remove()
+    for (i = 0; i < tracks.length; ++i) {
+      track = tracks[i]
+      duration = track.duration / 1000 / 60
+      template = `<div class="row container"><p class="track-index">${i + 1}</p><div class="img-block" onclick="play_click(this)"><button class="play-button">` +
+        `<img src="../img/play.png" alt=""></button><img src="${track.img}"` +
+        `class="track-img"></div><p class="track-artists col-5">${track.artists.join()}</p><p class="track-name col-5">${track.name}</p>` +
+        `<p class="duration">${Math.floor(duration)}:${parseInt((duration - Math.floor(duration)) * 100)}</p></div>`
+      $(template).appendTo($("#list")[0])
+    }
+  }
+
+  function search_click() {
+    query = $("#search-input").val()
+    $.ajax({
+      method: 'POST',
+      url: "http://localhost:5000/track",
+      contentType: 'application/json',
+      dataType: 'json',
+      data: JSON.stringify({ name: query }),
+      success: (data) => {
+        show_tracks(data.result);
+      }
+    })
+  }
+
+  $("input").keypress((event) => {
+    keycode = event.keyCode ? event.keyCode : 0
+    if (keycode === 13) {
+      search_click()
+    }
+  })
+</script>
+
+</html>
