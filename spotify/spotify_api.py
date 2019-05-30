@@ -7,6 +7,7 @@ import copy
 import math
 from spotipy.client import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
+import requests
 
 tracks_file = open('tracks.csv','a')
 artists_file = open('artists.csv','a')
@@ -81,7 +82,7 @@ def process_tracks(tracks,features):
 
 total_songs_processed = 0
 
-if __name__ == '__main__':
+def main1():
     songs  = pd.read_csv('./data/csv/songs.csv',delimiter=';',error_bad_lines=False)
     # genres = pd.read_csv('./data/csv/tags.csv',delimiter=';',error_bad_lines=False)
     N = len(songs) 
@@ -103,3 +104,22 @@ if __name__ == '__main__':
             ids = []
             total_songs_processed += 50
             print(total_songs_processed)
+
+
+def main2():
+    """ Get all data by artist name """
+    dataset = pd.read_csv('/home/nokinobi/Workspace/PycharmProjects/Thesis/spotify/au.csv',delimiter=',')
+    # print(dataset)
+    for _,row in dataset.iterrows():
+        _,_,id = row[1].split(':')
+        print(id)        
+        # query = f"https://zvuk.com/sapi/search?query={(song.artist[0].name + ' ' + song.name) }&include=track"
+        # resp = requests.get(query).json()
+        # if 'tracks' not in resp['result']: continue
+        # id = list(resp["result"]["tracks"].keys())[0]
+
+
+
+
+if __name__ == "__main__":
+    main2()

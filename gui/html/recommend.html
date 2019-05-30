@@ -1,0 +1,20 @@
+<h3>Ваші рекомендації</h3>
+<hr>
+<div class="search-result">
+    <ul id="list">
+        <!-- Item  -->
+    </ul>
+</div>
+
+<script>
+    $.ajax({
+        method: 'POST',
+        url: "http://localhost:5000/recommend",
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({ username:username  }),
+        success: (data) => {
+            show_tracks(data.result)
+        }
+    })
+</script>

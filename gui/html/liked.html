@@ -1,0 +1,23 @@
+<h3>Ваші вподобання</h3>
+<hr>
+<div class="search-result">
+    <ul id="list">
+        <!-- Item  -->
+    </ul>
+</div>
+
+<script>
+    function load_likes() {
+        $.ajax({
+            method: 'POST',
+            url: "http://localhost:5000/user_likes",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({ username: username}),
+            success: (data) => {
+                show_tracks(data.result)
+            }
+        })
+    }
+    load_likes()
+</script>

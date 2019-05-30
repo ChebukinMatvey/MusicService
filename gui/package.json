@@ -2,7 +2,7 @@
   "name": "gui",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "app.js",
   "dependencies": {
     "electron": "^5.0.1",
     "electron-reload": "^1.4.0",

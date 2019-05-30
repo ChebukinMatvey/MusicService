@@ -19,7 +19,12 @@ songs_tags = Table(
     Column('song_id',String(23),ForeignKey('songs.id')),
     Column('tag_id',Integer,ForeignKey('tags.id'))
 )
-
+user_song=Table(
+    'user_song',
+    Base.metadata,
+    Column('user_id',Integer,ForeignKey('user.id')),
+    Column('song_id',String(23),ForeignKey('songs.id'))
+)
 
 
 ######################################################
@@ -71,6 +76,8 @@ class Song(Base):
     features_id = Column(String(23),ForeignKey('features.id'))
     feature = relationship('Feature',uselist=False,foreign_keys=[features_id])
 
+    def __eq__(self,other):
+        return True if self.id == other.id else False
 
 
 ###########################################################
@@ -82,14 +89,25 @@ class Feature(Base):
     danceability = Column(Float(6,4))
     energy= Column(Float(6,4))
     instrumentalness = Column(SmallInteger)
-    liveness = Column(Float(6,4))
     loudness = Column(Float(6,4))
+    liveness = Column(Float(6,4))
     valence = Column(Float(6,4))
     tempo = Column(Float(7,4))
 
     song_id = Column(String(23),ForeignKey('songs.id'))
     song =  relationship('Song',uselist=False,foreign_keys=[song_id])
 
+
+###########################################################
+class User(Base):
+    __tablename__="user"
+
+    id = Column(Integer,primary_key=True)
+    name = Column(String(10))
+    pswd = Column(String(10))
+    liked_songs = relationship('Song',secondary=user_song)   
+
+###########################################################
 
 def init_schema():
     engine = create_engine(

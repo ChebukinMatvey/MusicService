@@ -26,7 +26,7 @@
     width: 100%;
     bottom: 0;
     height: 100px;
-    /* display: none; */
+    display: none;
     background: white;  
 }
 
@@ -110,6 +110,13 @@ i.pause{
     margin-bottom: 20px;
 }
 
+input#audio-state[type='range']::-webkit-slider-thumb {
+    width: 300px;
+    cursor: pointer;
+    /* -webkit-appearance: none; */
+    background: #292929;
+    box-shadow: -1000px 0 0 1000px #c61313;
+}
 
 
 input[type='range'] {

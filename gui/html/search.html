@@ -1,0 +1,20 @@
+<div class="input-group mb-3">
+  <input type="text" id="search-input" class="form-control">
+  <button class="btn btn-default search-button" onclick="search_click()">Пошук</button>
+</div>
+<div class="search-result">
+  <ul id="list">
+    <!-- Item  -->
+  </ul>
+</div>
+
+<script>
+  
+  $("input").keypress((event) => {
+    keycode = event.keyCode ? event.keyCode : 0
+    if (keycode === 13) {
+      search_click()
+    }
+  })
+
+</script>

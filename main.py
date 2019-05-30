@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
-from database.database import fill_streams 
+from database.scheme import Song 
+from database.database import get_session
 from api.app import main
+
 
 
 if __name__=="__main__":
