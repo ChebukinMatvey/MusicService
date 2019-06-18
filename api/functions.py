@@ -3,8 +3,10 @@ from database.database import get_session
 from Levenshtein import jaro
 import json
 import urllib3
+import operator
 from sqlalchemy import and_
 from random import shuffle
+from datetime import datetime, timedelta
 
 session = get_session()
 
@@ -148,17 +150,63 @@ def distance(left,right):
             (left.feature.valence - right.feature.valence)**2
             ))**0.5
 
+# rcommendation system  
 
-def get_recommendations(username):
+def time_diff(date1,date2):
+    return abs((datetime.combine(datetime.today(),date1) - datetime.combine(datetime.today(),date2)).total_seconds())
+
+def foo(x):
+    user = session.query(User).filter(User.name == "nokinobi").first()
+    like_time = session.query(user_song).filter(and_(user_song.c.user_id==user.id,x.id==user_song.c.song_id)).first().time.time()
+    current_time = datetime.time(datetime.now())
+    date1 = datetime.combine(datetime.today(),current_time)
+    date2 = datetime.combine(datetime.today(),like_time)
+    diff = date1 - date2
+    return diff.total_seconds()
+
+
+def f(r):
+    return 1/r   
+
+n = 60+1
+k=10
+
+def get_recommendations(username,song_id=None):
     user = session.query(User).filter(User.name==username).first()
     all_songs = session.query(Song).all()
+    
+    if song_id is not None:
+        song = session.query(Song).get(song_id)
+        return get_recommendations_for_song(song,all_songs,user)
+
+    processed_data = {}
+    current_time = datetime.time(datetime.now())
+    for like in user.liked_songs:
+        like_time = session.query(user_song).filter(and_(user_song.c.user_id==user.id,like.id==user_song.c.song_id)).first().time.time()
+        processed_data[like.id] = time_diff(current_time,like_time)
+    processed_data = sorted(processed_data.items(),key=operator.itemgetter(1))[:k]
+    processed_data  = dict(processed_data)
+    r = [ f(diff) for diff in processed_data.values() ]
+    
     res = []
-    for song in user.liked_songs:
-        for s in all_songs:
+    
+    for i, pair in enumerate( processed_data.items()):
+        id = pair[0]
+        song = session.query(Song).get(id)
+        recommendations = get_recommendations_for_song(song,all_songs,user)
+        res += recommendations[:int(len(recommendations)*(r[i]/sum(r)))]
+        print("For "+song.name+" "+ str(int(len(recommendations)*((r[i])/sum(r)))) +" time: "+ str(current_time))
+    shuffle(res)
+    return res
+
+# wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+
+def get_recommendations_for_song(song,all_songs,user):
+    res = []
+    for s in all_songs:
             if s == song: continue
-            if len(res) == 25: break
             d = distance(s,song)
-            if d < 0.5:
+            if d < 10:
                 res.append(
                     {
                         "id":s.id,
@@ -167,8 +215,29 @@ def get_recommendations(username):
                         "stream":s.stream,
                         "artists": [ artist.name for artist in s.artist],
                         "img":s.album.img,
-                        "like":False
+                        "like": True if s in user.liked_songs else False,
+                        "distance":d
                     }
                 )
-    shuffle(res)
-    return (res)
+    res = sorted(res,key=lambda x :x['distance'])
+    return res[:n]
+
+
+
+def most_popular(username):
+    user = session.query(User).filter(User.name==username).first()
+    all_songs = session.query(Song).join(Song.artist).filter(Artist.followers > 100000).order_by(Artist.followers.desc()).all()
+    res = []
+    for song in all_songs[:100]:
+        res.append(
+                {
+                    "id":song.id,
+                    "name":song.name,
+                    "duration": song.feature.duration,
+                    "stream":song.stream,
+                    "artists": [ artist.name for artist in song.artist],
+                    "img":song.album.img,
+                    "like": True if song in user.liked_songs else False
+                }
+            )
+    return res

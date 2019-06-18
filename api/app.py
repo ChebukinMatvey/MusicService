@@ -52,14 +52,24 @@ def like_delete():
 @app.route('/user_likes',methods=['POST'])
 def user_likes():
     data = request.get_json(force=True)
-    return process_data( get_user_likes(data['username']) )
+    res = get_user_likes(data['username'])
+    res.reverse()
+    return process_data( res )
 
 
 @app.route('/recommend',methods=['POST'])
 def recommend():
     data = request.get_json()
-    return process_data(get_recommendations(data['username']))
+    if 'song_id' in data:
+        return process_data(get_recommendations(data['username'],data['song_id']))
+    else:
+        return process_data(get_recommendations(data['username']))
 
+
+@app.route('/most_popular',methods=['POST'])
+def popular():
+    data = request.get_json(force=True)
+    return process_data( most_popular(data['username']) )
 
 def main():
     app.run()

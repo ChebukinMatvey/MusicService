@@ -15,7 +15,13 @@
 
 <body>
     <div class="menu"></div>
-    <div class="container"></div> <!-- Div for view  -->
+    <div class="container">
+        <h3>Популярні</h3>
+        <hr>
+        <ul id="list">
+            <!-- item  -->
+        </ul>
+    </div>
     <div class="player"></div>
 </body>
 
@@ -28,11 +34,35 @@
 <script src="../js/menu.js"></script>
 
 <script>
+    var ipcRenderer
+
     $($(".player")[0]).load('./player.html')
     $($(".menu")[0]).load('./menu.html')
- 
-    const { ipcRenderer } = require('electron')
-    ipcRenderer.on('save-username', (e, a) => { username = a })
+
+
+    if (ipcRenderer == undefined)
+        ipcRenderer = require('electron').ipcRenderer
+    else
+        load_popular()
+
+    ipcRenderer.on('save-username', (e, a) => {
+        username = a
+        load_popular()
+    })
+
+    function load_popular() {
+        $.ajax({
+            method: 'POST',
+            url: "http://localhost:5000/most_popular",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({ username: username }),
+            success: (data) => {
+                show_tracks(data.result)
+            }
+        })
+    }
+
 </script>
 
 </html>

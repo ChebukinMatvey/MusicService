@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 import pandas as pd
-from database.scheme import Artist, Album,Song
+from database.scheme import Artist, Album,Song, Recommendation
 from database.scheme import init_schema
 from database.functions import *
 import json
 from pprint import pprint
 import requests
+import threading
+
 
 def fill_albums():
     # Fill albums 
@@ -77,3 +79,38 @@ def insert():
     session = get_session()
     song = session.query(Song).get('3JEzGRDUsozrehZTq3dKE8')
     pprint(song.__dict__)
+
+
+
+def distance(left,right):
+    return  (float( (left.feature.danceability - right.feature.danceability)**2 + 
+            (left.feature.instrumentalness - right.feature.instrumentalness)**2 + 
+            (left.feature.loudness - right.feature.loudness)**2 + 
+            (left.feature.liveness - right.feature.liveness)**2 + 
+            (left.feature.tempo - right.feature.tempo)**2 + 
+            (left.feature.valence - right.feature.valence)**2
+            ))**0.5
+
+def save_recommendations():
+    session = get_session()
+    songs = session.query(Song).all()
+    buffer = []
+    for_one_song = 0
+    for i in range(1326,len(songs)):
+        source = songs[i]
+        for target in songs:
+            if target == source: continue
+            d = distance(source,target)
+            if d <= 0.5:
+               buffer.append(Recommendation(source_id = source.id,target_id = target.id))
+               for_one_song+=1
+            if len(buffer) > 50 or for_one_song == 10:
+                try:
+                    session.bulk_save_objects(buffer)
+                    session.commit()
+                    buffer = []
+                    for_one_song = 0
+                    print("Processed",i)
+                    break
+                except Exception as msg:
+                    print(msg)

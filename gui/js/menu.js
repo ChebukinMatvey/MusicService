@@ -8,8 +8,10 @@ function menu_liked_click(){
 
 function menu_recommend_click(){
     $($(".container")[0]).load('../html/recommend.html')
+}
 
-
+function menu_top_click(){
+    $($(".container")[0]).load('../html/template.html')
 }
 
 function menu_current_list_click(){

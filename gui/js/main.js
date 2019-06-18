@@ -22,13 +22,14 @@ async function show_tracks(tracks) {
         template = `<li class="row container"><p class="track-index">${i + 1}</p><div class="img-block" onclick="play_click(this)"><button class="play-button">` +
             `<img src="../img/play.png" alt=""></button><img src="${track.img}"` +
             `class="track-img"></div><p class="track-artists col-5">${track.artists.join()}</p><p class="track-name col-5">${track.name}</p>` +
-            `<img id="like" src="${ track.like ? liked:unliked }" onclick="like_click(this)"></li>`
+            `<div class="col 2"><img id='recommend' onclick="recommendation_by_track(this)" src='https://cdn2.iconfinder.com/data/icons/apple-inspire-black/100/Apple-40-512.png'>`+
+            `<img id="like"  src="${ track.like ? liked:unliked }" onclick="like_click(this)"></div></li>`
         $(template).appendTo($("#list")[0])
     }
 }
 
 function like_click(img) {
-    index = parseInt(img.parentElement.children[0].innerHTML)
+    index = parseInt(img.parentElement.parentElement.children[0].innerHTML)
     id = track_list[index - 1].id
 
     if ($(img).attr('src') === liked) {
@@ -41,7 +42,6 @@ function like_click(img) {
             success: (data) => {
                 if (data.result) {
                     $(img).attr("src", unliked)
-                    console.log("Liked")
                 }
             }
         })
@@ -56,9 +56,25 @@ function like_click(img) {
             success: (data) => {
                 if (data.result) {
                     $(img).attr("src", liked)
-                    console.log("Liked")
                 }
             }
         })
     }
+}
+
+function recommendation_by_track(img){
+    index = parseInt(img.parentElement.parentElement.children[0].innerHTML)
+    id = track_list[index - 1].id
+
+    $.ajax({
+        method: 'POST',
+        url: "http://localhost:5000/recommend",
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({username:username,song_id:id}),
+        success: (data) => {
+            show_tracks(data.result)
+            $($("h3")[0]).html("Схожі пісні")
+        }
+    })
 }

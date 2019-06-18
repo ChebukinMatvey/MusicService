@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-from sqlalchemy import Float,String,ForeignKey, create_engine,Integer, SmallInteger, Column, Table 
+from sqlalchemy import Float,String,ForeignKey, create_engine,Integer, SmallInteger, Column, Table ,TIMESTAMP
 from sqlalchemy.orm import backref,relationship,Session
 from sqlalchemy.ext.declarative import declarative_base 
-
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -23,9 +23,9 @@ user_song=Table(
     'user_song',
     Base.metadata,
     Column('user_id',Integer,ForeignKey('user.id')),
-    Column('song_id',String(23),ForeignKey('songs.id'))
+    Column('song_id',String(23),ForeignKey('songs.id')),
+    Column('time',TIMESTAMP,default=datetime.now())
 )
-
 
 ######################################################
 class Artist(Base):
@@ -103,11 +103,21 @@ class User(Base):
     __tablename__="user"
 
     id = Column(Integer,primary_key=True)
-    name = Column(String(10))
-    pswd = Column(String(10))
+    name = Column(String(10),ForeignKey('songs.id'))
+    pswd = Column(String(10),ForeignKey('songs.id'))
     liked_songs = relationship('Song',secondary=user_song)   
 
 ###########################################################
+
+class Recommendation(Base):
+    __tablename__="recommendations"
+
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    source_id = Column(String(23),ForeignKey('songs.id'))
+    target_id = Column(String(23),ForeignKey('songs.id'))
+    source = relationship(Song,foreign_keys=[source_id])
+    target = relationship(Song,foreign_keys=[target_id])
+
 
 def init_schema():
     engine = create_engine(

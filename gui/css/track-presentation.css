@@ -64,10 +64,26 @@
     line-height: 40px;
 }
 
+li div {
+    display: inline;
+}
+
+#recommend{
+    display: inline;
+    position: absolute;
+    width: 23px;
+    height: 23px;
+    cursor: pointer;
+    top:13px;
+    right: 100px;
+}
+
 #like{
+    position: absolute;
     width: 30px;
     height: 30px;
     margin-top: 5px; 
+    right: 0;
 }
 #like:hover{
     cursor: pointer;

@@ -49,3 +49,8 @@ body >div.container{
     height: 30p;
     cursor: pointer;
 }
+
+.start-play{
+    width: 100px;
+    height: 100px;
+}

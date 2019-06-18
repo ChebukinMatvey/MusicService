@@ -15,7 +15,6 @@ function createWindow(filename) {
         }
     })
     win.loadFile('./html/login.html')
-    win.webContents.openDevTools()
     // win.on('closed', () => {win = null})
 }
 
@@ -33,7 +32,6 @@ ipcMain.on('logined', (e, a) => {
     nwin.loadFile('./html/template.html')
     win.close()
     win = nwin
-    win.webContents.openDevTools()
     win.webContents.on('did-finish-load',()=>{
         win.webContents.send('save-username', a)
     })
